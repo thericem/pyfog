@@ -16,12 +16,12 @@ class ANDO_AQ6317B:
         self.inst.timeout = milliseconds
 
     def get_spectrum(self):
-        spectrum_string = self.inst.query('LDATB')
-        spectrum = np.array(spectrum_string[:-2].split(','))
-        spectrum = spectrum.astype(np.float)[2:]
+        power_string = self.inst.query('LDATB')
+        power = np.array(power_string[:-2].split(','))
+        power = power.astype(np.float)[2:]
 
         wavelength_string = self.inst.query('WDATB')
         wavelength = np.array(wavelength_string[:-2].split(','))
         wavelength = wavelength.astype(np.float)[2:]
 
-        return spectrum, wavelengthPyDAQmx
+        return wavelength, power

@@ -7,7 +7,7 @@ pyfog Hardware Wrappers
 
 There a bunch of useful hardware wrappers provided herein. Please read the
 documentation on each submodule, as many of them are quite different. This
-module provides support for various USB, Serial, and GPIB devices.
+module provides support for various USB, Serial, and GPIB devices..
 """
 
 from .Agilent_33250A import *

@@ -8,7 +8,7 @@ NI 9215
 
 .. moduleauthor:: Jonathan Wheeler <jamwheel@stanford.edu>
 
-This module provide support for the `NI 9215`_ Data Acquisition Unit.
+This module provides support for the `NI 9215`_ Data Acquisition Unit.
 Much of the code base was adapted from examples at <https://pythonhosted.org/PyDAQmx/>.
 It is my understanding that the examples make use of C code, so if you have questions
 on what specific methods do inside of my code, please search for the documentation
