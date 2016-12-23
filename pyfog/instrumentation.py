@@ -28,6 +28,7 @@ example, to hook up a lock-in amplifier
 import visa
 import serial
 import re
+import sys
 
 class GPIB:
     """ A wrapper class for the GPIB bus.
@@ -159,7 +160,7 @@ class Serial:
         pass
 
     # http: // stackoverflow.com / questions / 12090503 / listing - available - com - ports -with-python
-    def serial_ports():
+    def serial_ports(self):
         """ Lists serial port names
 
             :raises EnvironmentError:
@@ -189,3 +190,25 @@ class Serial:
 
     if __name__ == '__main__':
         print(serial_ports())
+
+def load_default():
+    import pyfog
+    global ser
+    global gpib
+    global awg
+    global lia
+    global rot
+    global daq
+
+    gpib = GPIB()
+    ser = Serial()
+    awg = pyfog.Agilent_33250A(gpib.lookup('Agilent'))
+    lia = pyfog.SRS_SR844(gpib.lookup('SR844'))
+    rot = pyfog.NSC_A1()
+    daq = pyfog.NI_9215()
+
+    print('Loaded:\n')
+    print('- awg = %s' % awg.identify())
+    print('- lia = %s' % lia.identify())
+    print('- rot = %s' % rot.identify())
+    print('- daq = %s' % daq.identify())

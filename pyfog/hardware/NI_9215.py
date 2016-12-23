@@ -87,3 +87,8 @@ class NI_9215:
         #TODO clean this up
         self.data = self.data/10 * max_voltage
         return self.data
+
+    def identify(self):
+        buf = ctypes.create_string_buffer(16)
+        DAQmxGetDevProductType("Dev1", buf, 16);
+        return "".join([(c).decode() for c in buf][:-1])

@@ -26,7 +26,7 @@ import sys
 
 
 class NSC_A1:
-    def __init__(self, port='COM3', channel=1, timeout=0.1, max_x=10e4,
+    def __init__(self, port='COM8', channel=1, timeout=0.1, max_x=10e4,
                  min_x=-10e4, verbose=False):
         """
 
@@ -54,6 +54,7 @@ class NSC_A1:
         """
         self.verbose = verbose
         self.channel = channel
+        self.port = port
         self.inst = serial.Serial(port)
         self.inst.timeout = timeout
         self._max_x = max_x
@@ -213,6 +214,11 @@ class NSC_A1:
 
     def ccw(self, val, foreground=True, unit="deg"):
         self.cw(-val, foreground, unit)
+
+    def identify(self):
+        model = str(self.cmd('ID'))
+        return "Serial device on %s, %s" % (self.port,
+                                                                model)
 
     def close(self):
         self.inst.close()
