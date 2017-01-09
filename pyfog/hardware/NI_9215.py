@@ -25,7 +25,7 @@ class NI_9215:
     def __init__(self):
         pass
 
-    def read(self,seconds=1,frequency=10000.0,min_voltage=-10, max_voltage=10,timeout=0):
+    def read(self,seconds=1,frequency=10000.0, max_voltage=10,timeout=0):
         """
         Return data from the DAQ.
 
@@ -35,8 +35,6 @@ class NI_9215:
             Sample duration in seconds
         frequency : int, float
             Number of samples to collect per second
-        min_voltage : float
-            Deprecated
         max_voltage : float
             Scale factor. The DAQ expects a range of voltages ranging from -10V
             to +10V. The max_voltage tells ``read()`` what to scale a 10V signal

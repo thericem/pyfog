@@ -201,7 +201,7 @@ class NSC_A1:
         self.cmd('X{}'.format(ticks))
         return self.wait_until_motor_is_idle(start, stop=ticks)
 
-    def cw(self, val, foreground=True, unit="deg"):
+    def cw(self, val, background=False, unit="deg"):
         val = self.get_ticks(val, unit)
         if not self.is_safe(self.x + val):
             return
@@ -209,11 +209,11 @@ class NSC_A1:
         self.cmd('INC')
         self.cmd('X{}'.format(val))
 
-        if foreground:
+        if not background:
             self.wait_until_motor_is_idle()
 
-    def ccw(self, val, foreground=True, unit="deg"):
-        self.cw(-val, foreground, unit)
+    def ccw(self, val, background=False, unit="deg"):
+        self.cw(-val, background, unit)
 
     def identify(self):
         model = str(self.cmd('ID'))

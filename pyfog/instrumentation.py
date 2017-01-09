@@ -191,7 +191,7 @@ class Serial:
     if __name__ == '__main__':
         print(serial_ports())
 
-def load_default():
+def load_defaults():
     import pyfog
     global ser
     global gpib
@@ -207,7 +207,7 @@ def load_default():
     rot = pyfog.NSC_A1()
     daq = pyfog.NI_9215()
 
-    print('Loaded:\n')
+    print('Loaded:')
     print('- awg = %s' % awg.identify())
     print('- lia = %s' % lia.identify())
     print('- rot = %s' % rot.identify())
