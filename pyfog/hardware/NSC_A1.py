@@ -26,7 +26,7 @@ import sys
 
 
 class NSC_A1:
-    def __init__(self, port='COM8', channel=1, timeout=0.1, max_x=10e4,
+    def __init__(self, port='COM3', channel=1, timeout=0.1, max_x=10e4,
                  min_x=-10e4, verbose=False):
         """
 
@@ -61,6 +61,7 @@ class NSC_A1:
         self._min_x = min_x
         self._max_angle = max_x / 1e4
         self._min_angle = min_x / 1e4
+        self.velocity = 1 # not too fast, not too slow
 
     def cmd(self, command):
         """Send a command to the motor driver over the serial interface
@@ -160,6 +161,10 @@ class NSC_A1:
     def min_angle(self):
         return self._min_angle
 
+    @property
+    def velocity(self):
+        return int(self.cmd('HSPD')) / 1e4
+
     @max_x.setter
     def max_x(self, val):
         self._max_x = val
@@ -200,6 +205,12 @@ class NSC_A1:
         self.cmd('ABS')
         self.cmd('X{}'.format(ticks))
         return self.wait_until_motor_is_idle(start, stop=ticks)
+
+    @velocity.setter
+    def velocity(self, val):
+        if val > 10:
+            raise Exception('Max speed I allow is 10 deg per sec')
+        self.cmd('HSPD=%i' % (val * 1e4))
 
     def cw(self, val, background=False, unit="deg"):
         val = self.get_ticks(val, unit)
@@ -258,3 +269,15 @@ class NSC_A1:
         except KeyboardInterrupt:
             self.cmd('STOP')
             raise KeyboardInterrupt
+
+    def is_constant_speed(self, moving=False):
+        status = int(self.cmd('MST'))
+        if not moving and status == 0: return True
+        if status == 1: return True
+        return False
+
+    def is_stationary(self):
+        status = int(self.cmd('MST'))
+        if status == 0:
+            return True
+        return False

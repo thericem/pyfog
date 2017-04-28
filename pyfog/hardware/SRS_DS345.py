@@ -2,7 +2,7 @@ import visa
 import numpy as np
 
 
-class Agilent_33250A():
+class SRS_DS345():
     def __init__(self, visa_search_term):
         rm = visa.ResourceManager()
         self.inst = rm.open_resource(visa_search_term)
@@ -30,46 +30,21 @@ class Agilent_33250A():
     @property
     def volt(self):
         """Returns Vpp in volts"""
-        return float(self.inst.query('VOLT?'))
+        return float(self.inst.query('AMPL?')[:-3])
 
     @volt.setter
     def volt(self, val):
         """Sets Vpp in volts"""
-        # debug
-        string = 'VOLT %f' % float(val)
-        self.inst.write(string)
-
-    # alias
-    voltage = volt
+        self.inst.write('AMPL %f' % val)
 
     @property
     def phase(self):
-        "Returns phase in degrees"
-        return float(self.inst.query('PHAS?'))
+        return float(self.inst.query('PHSE?'))
 
     @phase.setter
     def phase(self, val):
-        self.inst.write('PHAS %f' % val)
-
-    @property
-    def waveform(self):
-        wf = self.inst.query('FUNC?')[:-1]
-        if wf == 'USER':
-            return 'USER ' + self.inst.query('FUNC:USER?')[:-1]
-        return wf
-
-    @waveform.setter
-    def waveform(self, val):
-        waveform_list = [
-            'SIN', 'SQU', 'RAMP', 'PULS', 'NOIS', 'DC', 'USER'
-        ]
-        if val.upper() in (waveform_list):
-            return self.inst.write('FUNC %s' % val)
-
-        elif val.upper()[0:4] == 'USER':
-            return self.inst.write('FUNC:%s' % val)
-        else:
-            raise Exception('%s is not a recognized waveform' % val)
+        """Sets phase in degrees"""
+        self.inst.write('PHSE %f' % val)
 
     def upload(self, points_array):
         points_array = np.array(points_array)

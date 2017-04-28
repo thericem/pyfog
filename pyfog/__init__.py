@@ -6,3 +6,4 @@ from .hardware import *
 # Import Toolkits
 
 from .instrumentation import *
+from .allan_variance import *

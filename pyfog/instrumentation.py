@@ -199,6 +199,7 @@ def load_defaults():
     global lia
     global rot
     global daq
+    global instrument_dict
 
     gpib = GPIB()
     ser = Serial()
@@ -207,7 +208,14 @@ def load_defaults():
     rot = pyfog.NSC_A1()
     daq = pyfog.NI_9215()
 
-    print('Loaded:')
+    instrument_dict = {
+        "rotation_platform": rot,
+        "lock_in_amplifier": lia,
+        "function_generator": awg,
+        "data_acquisition_unit": daq
+    }
+
+    print('Loaded into `instrument_dict`:')
     print('- awg = %s' % awg.identify())
     print('- lia = %s' % lia.identify())
     print('- rot = %s' % rot.identify())

@@ -118,6 +118,15 @@ current measurement has a Y value of zero and an X value equal to the signal
 magnitude, R."""
         self.inst.write('APHS')
 
+    def autogain(self):
+            self.inst.write('AGAN')
+            _old_timeout = self.inst.timeout
+            self.inst.timeout = 15e3
+            while int(self.inst.query('*STB?1')[:-1]):
+                # Do nothing until the status bit is clear
+                pass
+            self.inst.timeout = _old_timeout
+
 
     def get_status(self, status = None, verbose=False):
         if status == None:

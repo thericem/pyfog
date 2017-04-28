@@ -53,6 +53,12 @@ class NI_9215:
         numpy.array
             A one-dimensional numpy array of the data.
         """
+
+        # avoid an error
+        if frequency < 2:
+            print("Frequency needs to be > 2. You gave %f" % frequency)
+            frequency = 1000
+
         sample_size = int(seconds * frequency)
         if timeout == 0:
             timeout = seconds
