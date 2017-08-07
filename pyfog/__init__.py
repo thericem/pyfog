@@ -1,9 +1,10 @@
 # coding: utf-8
+"""Fiber Optic Gyroscope Toolkit
 
-# Import Hardware
-from .hardware import *
+.. moduleauthor:: Jonathan Wheeler <jamwheel@stanford.edu>
 
-# Import Toolkits
+Lots of things go in here...
 
-from .instrumentation import *
-from .allan_variance import *
+"""
+
+from .flight_simulator import *
