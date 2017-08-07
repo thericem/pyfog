@@ -203,7 +203,7 @@ def load_defaults():
 
     gpib = GPIB()
     ser = Serial()
-    awg = pyfog.Agilent_33250A(gpib.lookup('Agilent'))
+    awg = pyfog.Agilent_33250A(gpib.lookup('Agilent Technologies,33250A'))
     lia = pyfog.SRS_SR844(gpib.lookup('SR844'))
     rot = pyfog.NSC_A1()
     daq = pyfog.NI_9215()

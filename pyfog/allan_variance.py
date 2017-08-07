@@ -27,13 +27,14 @@ def get_scale_factor(instruments,_dither_angle=5, _dither_velocity=1,
     for i in range(5):
         freq = 1 / lia.time_constant
 
-    rot.cw(2*_dither_angle, background=True)
+    rot.cw(.5*_dither_angle, background=True)
     time.sleep(.5)
-    lia.autogain()
+    #lia.autogain()
+    lia.sensitivity = 0.1
     while not rot.is_stationary():
         pass
 
-    rot.ccw(2*_dither_angle, background=True)
+    rot.ccw(.5*_dither_angle, background=True)
     time.sleep(0.5)
     lia.autophase()
     while not rot.is_stationary():
@@ -204,8 +205,9 @@ def acquire_allan_variance(instruments,h5_file_name=None,h5_prefix=None,
     l.value = 'Calibrating and acquiring scale factor...'
     scale_factor = get_scale_factor(instruments)
     l.value = 'Setting sensitivity'
-    lia.autogain()
-    for i in range(15, 0, -1):
+    lia.sensitivity = 0.001
+    #lia.autogain()
+    for i in range(5, 0, -1):
         l.value = 'Beginning acquisition in %i seconds...' % i
         time.sleep(1)
 
