@@ -9,7 +9,6 @@ Welcome to Fiber Optic Gyro Toolkit's documentation!
 Contents:
 
 .. toctree::
-   :maxdepth: 2
    :glob:
 
    code_documentation/*

@@ -49,6 +49,38 @@
 <p>Various code for running
 some files
 and line breaks</p>
+<dl class="function">
+<dt id="pyfog.flight_simulator.generate_fog_data">
+<code class="descclassname">pyfog.flight_simulator.</code><code class="descname">generate_fog_data</code><span class="sig-paren">(</span><em>rate=1</em>, <em>seconds=0</em>, <em>minutes=0</em>, <em>hours=0</em>, <em>arw=0</em>, <em>drift=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyfog/flight_simulator.html#generate_fog_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyfog.flight_simulator.generate_fog_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a random fog run based on input time and statistics.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>rate</strong> (<em>float, optional</em>) &#8211; The number of samples per second.</li>
+<li><strong>seconds</strong> (<em>int, optional</em>) &#8211; The number of seconds of data</li>
+<li><strong>minutes</strong> (<em>int, optional</em>) &#8211; The number of minutes to be added to the seconds parameter</li>
+<li><strong>hours</strong> (<em>int, optional</em>) &#8211; The number of hours to be added to the seconds parameter</li>
+<li><strong>arw</strong> (<em>float, optional</em>) &#8211; The angular random walk, specified in degrees per root hour</li>
+<li><strong>drift</strong> (<em>float, optional</em>) &#8211; The bias drift, specified in degrees per hour</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">An array of data in degrees per hour, whose corresponding index are
+timestamps whose spacing is determined by the rate parameter.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">ndarray.float</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><code class="xref py py-exc docutils literal"><span class="pre">ValueError</span></code> &#8211; If the seconds, minutes, and hours do not add up to a positive time.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </div>
 
 
