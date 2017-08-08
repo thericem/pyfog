@@ -63,15 +63,13 @@ def generate_fog_single(
 
     arr_size = int(rate * time)
 
-    correlation_time *= rate
-
     # Set the parameters used by Lv et al
-    Ta = 10 * rate  # 10 seconds
+    Ta = 10  # 10 seconds
     ΔT = 1/rate  # sampling time, user-defined
-    qx = drift # bias drift, user-defined
-    Tm = correlation_time * rate #  bias drift, user-defined, default 1800 s
-    qw = arw * 60 / np.sqrt(ΔT) # angular random walk, user-defined, equation 5 in Lv
-    T = time * rate # total time, user-defined
+    qx = drift  # bias drift, user-defined
+    Tm = correlation_time # bias drift, user-defined, default 1800 s
+    qw = arw * 60 / np.sqrt(ΔT)  # angular random walk, user-defined, equation 5 in Lv
+    T = time  # total time, user-defined
 
     print(qw)
 
@@ -91,7 +89,7 @@ def generate_fog_single(
 
     markov = np.zeros(arr_size)
     for i in range(1, arr_size):
-        markov[i] = (np.exp(-rate/correlation_time) * markov[i-1]
+        markov[i] = (np.exp(-ΔT/Tm) * markov[i-1]
                      + np.random.randn() * qmw)
 
     noise = np.random.randn(arr_size) * qw
