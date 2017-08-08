@@ -44,7 +44,7 @@ def generate_fog_single(
     Returns
     -------
     ndarray.float
-        An array of data in degrees per second, whose corresponding index are
+        An array of data in degrees per hour, whose corresponding index are
         timestamps whose spacing is determined by the rate parameter.
 
     Raises
@@ -70,7 +70,7 @@ def generate_fog_single(
     ΔT = 1/rate  # sampling time, user-defined
     qx = drift # bias drift, user-defined
     Tm = correlation_time #  bias drift, user-defined, default 1800 s
-    qw = arw / 60 / np.sqrt(ΔT) # angular random walk, user-defined, equation 5 in Lv
+    qw = arw * 60 / np.sqrt(ΔT) # angular random walk, user-defined, equation 5 in Lv
     T = time # total time, user-defined
 
     # Equation 20 in Lv
