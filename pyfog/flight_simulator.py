@@ -7,7 +7,7 @@ and line breaks
 import numpy as np
 
 
-def generate_fog_single(
+def simulate_fog_single(
         rate=1,  # Hz
         seconds=0,
         minutes=0,
@@ -16,9 +16,26 @@ def generate_fog_single(
         drift=0,
         correlation_time=1800
         ):
-    """Generates a random fog run based on input time and statistics.
+    """Generates a stochastic error simulation based on performance indicators.
+    Note that this method uses a definition of bias stability that takes the
+    standard deviation of 10-second averages. The algorithm is taken from
+    [#Lv]_.
 
-    .. note: Atleast one of `seconds`, `minutes`, or `hours` must be positive,
+    In order to recreate the same results that Lv et al show, enter the
+    following command:
+
+    >>> data = simulate_fog_single(rate=50, hours=4, arw=.0413,
+    ...      drift=.944, correlation_time=3600)
+
+    For more information on the algorithm, refer to [#Lv]_.
+
+
+    .. [#Lv] Lv, P., Lai, J., Liu, J., & Qin, G. (2014). Stochastic error
+       simulation method of fiber optic gyros based on performance indicators.
+       Journal of the Franklin Institute, 351(3), 1501–1516.
+       http://doi.org/10.1016/j.jfranklin.2013.11.007
+
+    .. note:: Atleast one of `seconds`, `minutes`, or `hours` must be positive,
        otherwise a `ValueError` will be raised.
 
     Parameters
@@ -49,9 +66,9 @@ def generate_fog_single(
 
     Raises
     ------
-
     ValueError
         If the seconds, minutes, and hours do not add up to a positive time.
+
     """
 
     # Define the length in seconds
@@ -67,26 +84,23 @@ def generate_fog_single(
     Ta = 10  # 10 seconds
     ΔT = 1/rate  # sampling time, user-defined
     qx = drift  # bias drift, user-defined
-    Tm = correlation_time # bias drift, user-defined, default 1800 s
-    qw = arw * 60 / np.sqrt(ΔT)  # angular random walk, user-defined, equation 5 in Lv
+    Tm = correlation_time  # bias drift, user-defined, default 1800 s
     T = time  # total time, user-defined
 
-    print(qw)
+    # Equation 5 in Lv
+    qw = arw * 60 / np.sqrt(ΔT)
 
     if drift:
         # Equation 20 in Lv
-        qmw = np.sqrt((
-            qx**2 - qw**2/(Ta/ΔT)
-            )*(
-                np.pi/2 * (1-np.exp(-2*ΔT/Tm))
-                /
-                (np.arctan(np.pi*Tm/Ta) - np.arctan(np.pi*Tm/T))
-        ))
-        #qmw = 0.002313
-        print(qmw)
+        qmw = np.sqrt(
+            (qx**2 - qw**2/(Ta/ΔT))
+            * np.pi/2 * (1-np.exp(-2*ΔT/Tm))
+            / (np.arctan(np.pi*Tm/Ta) - np.arctan(np.pi*Tm/T))
+        )
     else:
         qmw = 0
 
+    # Equation 3 in Lv
     markov = np.zeros(arr_size)
     for i in range(1, arr_size):
         markov[i] = (np.exp(-ΔT/Tm) * markov[i-1]
@@ -94,4 +108,5 @@ def generate_fog_single(
 
     noise = np.random.randn(arr_size) * qw
 
+    # Equation 2 in Lv
     return noise + markov

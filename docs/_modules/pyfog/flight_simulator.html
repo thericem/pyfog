@@ -1,6 +1,6 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
@@ -17,17 +17,16 @@
         VERSION:     '1.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="top" title="Fiber Optic Gyro Toolkit 1.0 documentation" href="../../index.html" />
-    <link rel="up" title="Module code" href="../index.html" />
    
   <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
   
@@ -35,7 +34,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
   </head>
-  <body role="document">
+  <body>
   
 
     <div class="document">
@@ -52,17 +51,36 @@
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<div class="viewcode-block" id="generate_fog_data"><a class="viewcode-back" href="../../code_documentation/flight_simulator.html#pyfog.flight_simulator.generate_fog_data">[docs]</a><span class="k">def</span> <span class="nf">generate_fog_data</span><span class="p">(</span>
+
+<div class="viewcode-block" id="simulate_fog_single"><a class="viewcode-back" href="../../code_documentation/flight_simulator.html#pyfog.flight_simulator.simulate_fog_single">[docs]</a><span class="k">def</span> <span class="nf">simulate_fog_single</span><span class="p">(</span>
         <span class="n">rate</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>  <span class="c1"># Hz</span>
         <span class="n">seconds</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
         <span class="n">minutes</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
         <span class="n">hours</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-        <span class="n">arw</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>  <span class="c1"># degree/√h</span>
-        <span class="n">drift</span><span class="o">=</span><span class="mi">0</span>  <span class="c1"># degree/h</span>
+        <span class="n">arw</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">drift</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">correlation_time</span><span class="o">=</span><span class="mi">1800</span>
         <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Generates a random fog run based on input time and statistics. Hello</span>
+    <span class="sd">&quot;&quot;&quot;Generates a stochastic error simulation based on performance indicators.</span>
+<span class="sd">    Note that this method uses a definition of bias stability that takes the</span>
+<span class="sd">    standard deviation of 10-second averages. The algorithm is taken from </span>
+<span class="sd">    [#Lv]_.</span>
 
-<span class="sd">    .. note: Atleast one of `seconds`, `minutes`, or `hours` must be positive,</span>
+<span class="sd">    In order to recreate the same results that Lv et al show, enter the</span>
+<span class="sd">    following command:</span>
+
+<span class="sd">    &gt;&gt;&gt; data = simulate_fog_single(rate=50, hours=4, arw=.0413,</span>
+<span class="sd">    ...      drift=.944, correlation_time=3600)</span>
+
+<span class="sd">    For more information on the algorithm, refer to [#Lv]_.</span>
+
+
+<span class="sd">    .. [#Lv] Lv, P., Lai, J., Liu, J., &amp; Qin, G. (2014). Stochastic error </span>
+<span class="sd">       simulation method of fiber optic gyros based on performance indicators. </span>
+<span class="sd">       Journal of the Franklin Institute, 351(3), 1501–1516. </span>
+<span class="sd">       http://doi.org/10.1016/j.jfranklin.2013.11.007</span>
+
+<span class="sd">    .. note:: Atleast one of `seconds`, `minutes`, or `hours` must be positive,</span>
 <span class="sd">       otherwise a `ValueError` will be raised.</span>
 
 <span class="sd">    Parameters</span>
@@ -79,6 +97,11 @@
 <span class="sd">        The angular random walk, specified in degrees per root hour</span>
 <span class="sd">    drift: float, optional</span>
 <span class="sd">        The bias drift, specified in degrees per hour</span>
+<span class="sd">    correlation_time: float, optional</span>
+<span class="sd">        The correlation time in seconds. For more information, see &quot;Stocastic</span>
+<span class="sd">        error  simulation method of fiber optic gyros based on performance</span>
+<span class="sd">        indicators&quot; by Lv et al. They recommend a value between 1800 and 3600</span>
+<span class="sd">        seconds.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -88,21 +111,50 @@
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
-
 <span class="sd">    ValueError</span>
 <span class="sd">        If the seconds, minutes, and hours do not add up to a positive time.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="c1"># Define the length in seconds</span>
     <span class="n">time</span> <span class="o">=</span> <span class="p">(</span><span class="n">hours</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span>
             <span class="o">+</span> <span class="n">minutes</span> <span class="o">*</span> <span class="mi">60</span>
             <span class="o">+</span> <span class="n">seconds</span><span class="p">)</span>
-
     <span class="k">if</span> <span class="n">time</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Time must be greater than zero&#39;</span><span class="p">)</span>
 
-    <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">arr_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">rate</span> <span class="o">*</span> <span class="n">time</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">a</span></div>
+    <span class="c1"># Set the parameters used by Lv et al</span>
+    <span class="n">Ta</span> <span class="o">=</span> <span class="mi">10</span>  <span class="c1"># 10 seconds</span>
+    <span class="n">ΔT</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">rate</span>  <span class="c1"># sampling time, user-defined</span>
+    <span class="n">qx</span> <span class="o">=</span> <span class="n">drift</span>  <span class="c1"># bias drift, user-defined</span>
+    <span class="n">Tm</span> <span class="o">=</span> <span class="n">correlation_time</span> <span class="c1"># bias drift, user-defined, default 1800 s</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">time</span>  <span class="c1"># total time, user-defined</span>
+
+    <span class="c1"># Equation 5 in Lv</span>
+    <span class="n">qw</span> <span class="o">=</span> <span class="n">arw</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">ΔT</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">drift</span><span class="p">:</span>
+        <span class="c1"># Equation 20 in Lv</span>
+        <span class="n">qmw</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">qx</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">qw</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="n">Ta</span><span class="o">/</span><span class="n">ΔT</span><span class="p">))</span>
+            <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">ΔT</span><span class="o">/</span><span class="n">Tm</span><span class="p">))</span>
+            <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arctan</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">Tm</span><span class="o">/</span><span class="n">Ta</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">Tm</span><span class="o">/</span><span class="n">T</span><span class="p">))</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">qmw</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c1"># Equation 3 in Lv</span>
+    <span class="n">markov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">arr_size</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">arr_size</span><span class="p">):</span>
+        <span class="n">markov</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">ΔT</span><span class="o">/</span><span class="n">Tm</span><span class="p">)</span> <span class="o">*</span> <span class="n">markov</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                     <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">()</span> <span class="o">*</span> <span class="n">qmw</span><span class="p">)</span>
+
+    <span class="n">noise</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">arr_size</span><span class="p">)</span> <span class="o">*</span> <span class="n">qw</span>
+
+    <span class="c1"># Equation 2 in Lv</span>
+    <span class="k">return</span> <span class="n">noise</span> <span class="o">+</span> <span class="n">markov</span></div>
 </pre></div>
 
           </div>
@@ -136,8 +188,8 @@
       &copy;2017, Jonathan Wheeler.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.8</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
     </div>
 
