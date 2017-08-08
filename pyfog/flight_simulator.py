@@ -71,17 +71,19 @@ def generate_fog_single(
     qx = drift # bias drift, user-defined
     Tm = correlation_time #  bias drift, user-defined, default 1800 s
     qw = arw * 60 / np.sqrt(ΔT) # angular random walk, user-defined, equation 5 in Lv
-    T = time # total time, user-defined
+    T = time * rate # total time, user-defined
 
-    # Equation 20 in Lv
-    qmw = 0
-#    qmw = np.sqrt((
-#        qx**2 - qw**2/(Ta/ΔT)
-#        )*(
-#            np.pi/2 * (1-np.exp(-2*ΔT/Tm))
-#            /
-#            (np.arctan(np.pi*Tm/Ta) - np.arctan(np.pi*Tm/T))
-#    ))
+    if drift:
+        # Equation 20 in Lv
+        qmw = np.sqrt((
+            qx**2 - qw**2/(Ta/ΔT)
+            )*(
+                np.pi/2 * (1-np.exp(-2*ΔT/Tm))
+                /
+                (np.arctan(np.pi*Tm/Ta) - np.arctan(np.pi*Tm/T))
+        ))
+    else:
+        qmw = 0
 
     markov = np.zeros(arr_size)
     for i in range(1, arr_size):
