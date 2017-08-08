@@ -1,5 +1,6 @@
 @ECHO OFF
 
+REM TODO: Add a file in root directory
 REM Command file for Sphinx documentation
 
 if "%SPHINXBUILD%" == "" (
