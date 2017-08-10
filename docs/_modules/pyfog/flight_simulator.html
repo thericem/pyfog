@@ -63,7 +63,7 @@
         <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Generates a stochastic error simulation based on performance indicators.</span>
 <span class="sd">    Note that this method uses a definition of bias stability that takes the</span>
-<span class="sd">    standard deviation of 10-second averages. The algorithm is taken from </span>
+<span class="sd">    standard deviation of 10-second averages. The algorithm is taken from</span>
 <span class="sd">    [#Lv]_.</span>
 
 <span class="sd">    In order to recreate the same results that Lv et al show, enter the</span>
@@ -75,9 +75,9 @@
 <span class="sd">    For more information on the algorithm, refer to [#Lv]_.</span>
 
 
-<span class="sd">    .. [#Lv] Lv, P., Lai, J., Liu, J., &amp; Qin, G. (2014). Stochastic error </span>
-<span class="sd">       simulation method of fiber optic gyros based on performance indicators. </span>
-<span class="sd">       Journal of the Franklin Institute, 351(3), 1501–1516. </span>
+<span class="sd">    .. [#Lv] Lv, P., Lai, J., Liu, J., &amp; Qin, G. (2014). Stochastic error</span>
+<span class="sd">       simulation method of fiber optic gyros based on performance indicators.</span>
+<span class="sd">       Journal of the Franklin Institute, 351(3), 1501–1516.</span>
 <span class="sd">       http://doi.org/10.1016/j.jfranklin.2013.11.007</span>
 
 <span class="sd">    .. note:: Atleast one of `seconds`, `minutes`, or `hours` must be positive,</span>
@@ -129,7 +129,7 @@
     <span class="n">Ta</span> <span class="o">=</span> <span class="mi">10</span>  <span class="c1"># 10 seconds</span>
     <span class="n">ΔT</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">rate</span>  <span class="c1"># sampling time, user-defined</span>
     <span class="n">qx</span> <span class="o">=</span> <span class="n">drift</span>  <span class="c1"># bias drift, user-defined</span>
-    <span class="n">Tm</span> <span class="o">=</span> <span class="n">correlation_time</span> <span class="c1"># bias drift, user-defined, default 1800 s</span>
+    <span class="n">Tm</span> <span class="o">=</span> <span class="n">correlation_time</span>  <span class="c1"># bias drift, user-defined, default 1800 s</span>
     <span class="n">T</span> <span class="o">=</span> <span class="n">time</span>  <span class="c1"># total time, user-defined</span>
 
     <span class="c1"># Equation 5 in Lv</span>
@@ -155,6 +155,52 @@
 
     <span class="c1"># Equation 2 in Lv</span>
     <span class="k">return</span> <span class="n">noise</span> <span class="o">+</span> <span class="n">markov</span></div>
+
+
+<div class="viewcode-block" id="get_cross_track_error"><a class="viewcode-back" href="../../code_documentation/flight_simulator.html#pyfog.flight_simulator.get_cross_track_error">[docs]</a><span class="k">def</span> <span class="nf">get_cross_track_error</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">rate</span><span class="p">,</span> <span class="n">velocity</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the final cross-track position (in nautical miles)</span>
+
+<span class="sd">    The algorithm simulates an aircraft traveling on a straight trajectory who</span>
+<span class="sd">    turns according to the data provided. The aircraft instantaneously updates</span>
+<span class="sd">    its heading at each timestep by Ω * Δt.</span>
+
+<span class="sd">    .. warning: This code assumes that the magnitude of the rotations in data</span>
+<span class="sd">       is small in order to use a paraxial approximation sin(\theta) = \theta.</span>
+<span class="sd">       This paraxial approximation speeds up the algorithm, which is important</span>
+<span class="sd">       if cross track error simulations will occur hundreds of times.</span>
+
+<span class="sd">    This can be used in conjunction with `simulate_fog_single`. In order to</span>
+<span class="sd">    simulate a transpacific flight and estimate the cross-track error for a</span>
+<span class="sd">    single run, one could run:</span>
+
+<span class="sd">    &gt;&gt;&gt; rate = 1 # Hz</span>
+<span class="sd">    &gt;&gt;&gt; data = simulate_fog_single(rate=rate, hours=10, arw=.0413,</span>
+<span class="sd">    ...      drift=.944, correlation_time=3600)</span>
+<span class="sd">    &gt;&gt;&gt; xtk = get_cross_track_error(data, rate, 900)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data: ndarray.float</span>
+<span class="sd">        An array of rotation rates, in deg/h</span>
+<span class="sd">    rate: float</span>
+<span class="sd">        The sampling rate of data in Hz</span>
+<span class="sd">    velocity: float</span>
+<span class="sd">        The velocity of the simulated aircraft in kph</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        The cross track error from this FOG signal.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">Δθ</span> <span class="o">=</span> <span class="n">data</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">180</span><span class="o">/</span><span class="mi">3600</span><span class="o">/</span><span class="n">rate</span>  <span class="c1"># radians</span>
+
+    <span class="n">heading</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">Δθ</span><span class="p">)</span>
+
+    <span class="n">Δy</span> <span class="o">=</span> <span class="n">velocity</span> <span class="o">*</span> <span class="mi">1000</span> <span class="o">/</span> <span class="mi">3600</span> <span class="o">/</span> <span class="n">rate</span> <span class="o">*</span> <span class="n">heading</span>  <span class="c1"># m</span>
+    <span class="n">xtk</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">Δy</span><span class="p">)</span> <span class="o">/</span> <span class="mi">1852</span>  <span class="c1"># nmi</span>
+
+    <span class="k">return</span> <span class="n">xtk</span></div>
 </pre></div>
 
           </div>

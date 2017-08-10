@@ -50,6 +50,43 @@
 some files
 and line breaks</p>
 <dl class="function">
+<dt id="pyfog.flight_simulator.get_cross_track_error">
+<code class="descclassname">pyfog.flight_simulator.</code><code class="descname">get_cross_track_error</code><span class="sig-paren">(</span><em>data</em>, <em>rate</em>, <em>velocity</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyfog/flight_simulator.html#get_cross_track_error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyfog.flight_simulator.get_cross_track_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the final cross-track position (in nautical miles)</p>
+<p>The algorithm simulates an aircraft traveling on a straight trajectory who
+turns according to the data provided. The aircraft instantaneously updates
+its heading at each timestep by Ω * Δt.</p>
+<p>This can be used in conjunction with <cite>simulate_fog_single</cite>. In order to
+simulate a transpacific flight and estimate the cross-track error for a
+single run, one could run:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">rate</span> <span class="o">=</span> <span class="mi">1</span> <span class="c1"># Hz</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">simulate_fog_single</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="n">rate</span><span class="p">,</span> <span class="n">hours</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">arw</span><span class="o">=.</span><span class="mi">0413</span><span class="p">,</span>
+<span class="gp">... </span>     <span class="n">drift</span><span class="o">=.</span><span class="mi">944</span><span class="p">,</span> <span class="n">correlation_time</span><span class="o">=</span><span class="mi">3600</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xtk</span> <span class="o">=</span> <span class="n">get_cross_track_error</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">rate</span><span class="p">,</span> <span class="mi">900</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong> (<em>ndarray.float</em>) – An array of rotation rates, in deg/h</li>
+<li><strong>rate</strong> (<em>float</em>) – The sampling rate of data in Hz</li>
+<li><strong>velocity</strong> (<em>float</em>) – The velocity of the simulated aircraft in kph</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The cross track error from this FOG signal.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
 <dt id="pyfog.flight_simulator.simulate_fog_single">
 <code class="descclassname">pyfog.flight_simulator.</code><code class="descname">simulate_fog_single</code><span class="sig-paren">(</span><em>rate=1</em>, <em>seconds=0</em>, <em>minutes=0</em>, <em>hours=0</em>, <em>arw=0</em>, <em>drift=0</em>, <em>correlation_time=1800</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyfog/flight_simulator.html#simulate_fog_single"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyfog.flight_simulator.simulate_fog_single" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generates a stochastic error simulation based on performance indicators.

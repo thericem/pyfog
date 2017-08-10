@@ -110,3 +110,49 @@ def simulate_fog_single(
 
     # Equation 2 in Lv
     return noise + markov
+
+
+def get_cross_track_error(data, rate, velocity):
+    """Returns the final cross-track position (in nautical miles)
+
+    The algorithm simulates an aircraft traveling on a straight trajectory who
+    turns according to the data provided. The aircraft instantaneously updates
+    its heading at each timestep by Ω * Δt.
+
+    .. warning: This code assumes that the magnitude of the rotations in data
+       is small in order to use a paraxial approximation sin(\theta) = \theta.
+       This paraxial approximation speeds up the algorithm, which is important
+       if cross track error simulations will occur hundreds of times.
+
+    This can be used in conjunction with `simulate_fog_single`. In order to
+    simulate a transpacific flight and estimate the cross-track error for a
+    single run, one could run:
+
+    >>> rate = 1 # Hz
+    >>> data = simulate_fog_single(rate=rate, hours=10, arw=.0413,
+    ...      drift=.944, correlation_time=3600)
+    >>> xtk = get_cross_track_error(data, rate, 900)
+
+    Parameters
+    ----------
+    data: ndarray.float
+        An array of rotation rates, in deg/h
+    rate: float
+        The sampling rate of data in Hz
+    velocity: float
+        The velocity of the simulated aircraft in kph
+
+    Returns
+    -------
+    float
+        The cross track error from this FOG signal.
+    """
+
+    Δθ = data * np.pi/180/3600/rate  # radians
+
+    heading = np.cumsum(Δθ)
+
+    Δy = velocity * 1000 / 3600 / rate * heading  # m
+    xtk = np.cumsum(Δy) / 1852  # nmi
+
+    return xtk
