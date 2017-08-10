@@ -1,7 +1,6 @@
 # coding: utf-8
-"""Various code for running
-some files
-and line breaks
+"""Methods for simulating FOG performance in an aircraft with perfect
+accelerometers.
 """
 
 import numpy as np
