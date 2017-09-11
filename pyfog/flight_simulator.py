@@ -7,7 +7,7 @@ import numpy as np
 from .experiment import Tombstone
 
 
-def simulate_fog_single(
+def simulate_tombstone(
         rate=1,  # Hz
         seconds=0,
         minutes=0,
