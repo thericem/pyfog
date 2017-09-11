@@ -73,14 +73,50 @@ class Tombstone(pd.Series):
         return Tombstone
 
     @property
+    def voltage(self):
+        if self.scale_factor:
+            return np.array(self)
+        else:
+            raise ValueError('Scale Factor not set')
+
+    # Aliases
+    v = voltage
+    V = voltage
+    volt = voltage
+    volts = voltage
+
+    @property
+    def millivolts(self):
+        return self.voltage * 1e3
+    
+    @property
+    def microvolts(self):
+        return self.voltage * 1e6
+
+    @property
+    def nanovolts(self):
+        return self.voltage * 1e9
+
+    mV = mv = millivolt = millivolts
+    uV = uv = microvolt = microvolts
+    nV = nv = nanovolt = nanovolts
+
+    @property
+    def rotation(self):
+        if self.scale_factor:
+            return self.scale_factor * np.array(self)
+        else:
+            return np.array(self)
+
+    @property
     def adev(self):
-        tau, dev, _, _ = oadev(np.array(self), rate=self.rate,
+        tau, dev, _, _ = oadev(self.rotation, rate=self.rate,
                                data_type='freq')
         return tau, dev
 
     @property
     def noise(self):
-        _, dev, _, _ = oadev(np.array(self), rate=self.rate, data_type='freq')
+        _, dev, _, _ = oadev(self.rotation, rate=self.rate, data_type='freq')
         return dev[0]/60
 
     # alias
@@ -88,7 +124,7 @@ class Tombstone(pd.Series):
 
     @property
     def drift(self):
-        tau, dev, _, _ = oadev(np.array(self), rate=self.rate,
+        tau, dev, _, _ = oadev(self.rotation, rate=self.rate,
                                data_type='freq')
         return min(dev)
 
