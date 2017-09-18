@@ -9,6 +9,7 @@ import tables as pt
 import pandas as pd
 import numpy as np
 from allantools import oadev
+import warnings
 
 
 class Tombstone(pd.Series):
@@ -56,10 +57,11 @@ class Tombstone(pd.Series):
             date_index = pd.date_range(
                 start=start*1e9, periods=len(data),
                 freq='%.3g ms' % (1000/rate), tz='UTC')
-            date_index = date_index.tz_convert('America/Los_Angeles')
+            date_index = date_index.tz_convert('America/Los_Angeles')\
+                    .tz_localize(None)
         else:
             date_index = np.arange(len(data))/60/60/rate
-        super().__init__(data, date_index)
+        super().__init__(data, date_index, *args, **kwargs)
         if scale_factor:
             self.name = 'voltage'
         else:
@@ -68,8 +70,15 @@ class Tombstone(pd.Series):
         self.scale_factor = scale_factor
         self.start = start
 
+    def __finalize__(self, other, method=None, **kwargs):
+        return self
+
     @property
     def _constructor(self):
+        return Tombstone
+
+    @property
+    def _constructor_sliced(self):
         return Tombstone
 
     @property
@@ -88,7 +97,7 @@ class Tombstone(pd.Series):
     @property
     def millivolts(self):
         return self.voltage * 1e3
-    
+
     @property
     def microvolts(self):
         return self.voltage * 1e6
@@ -142,15 +151,20 @@ class Experiment():
         self.h5file = pt.open_file(filename, mode=mode)
 
     def __setitem__(self, key, item):
+        key = str(key)
         if 'Tombstone' not in str(type(item)):
             raise ValueError('Object must be type pyfog.Tombstone')
-        arr = self.h5file.create_array(self.h5file.root, key, np.array(item))
+        
+        with warnings.catch_warnings(record=False) as w:
+            warnings.simplefilter("ignore")
+            arr = self.h5file.create_array(self.h5file.root, key, np.array(item))
         arr.attrs.rate = item.rate
         arr.attrs.start = item.start
         arr.attrs.scale_factor = item.scale_factor
         arr.flush()
 
     def __getitem__(self, key):
+        key = str(key)
         arr = self.h5file.get_node('/%s' % key)
         return Tombstone(
             np.array(arr),
