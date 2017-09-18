@@ -7,4 +7,5 @@ Lots of things go in here...
 
 """
 
+from .experiment import *
 from .flight_simulator import *

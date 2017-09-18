@@ -4,9 +4,10 @@ accelerometers.
 """
 
 import numpy as np
+from .experiment import Tombstone
 
 
-def simulate_fog_single(
+def simulate_tombstone(
         rate=1,  # Hz
         seconds=0,
         minutes=0,
@@ -108,7 +109,8 @@ def simulate_fog_single(
     noise = np.random.randn(arr_size) * qw
 
     # Equation 2 in Lv
-    return noise + markov
+    data = noise + markov 
+    return Tombstone(data=data, rate=rate) 
 
 
 def get_cross_track_error(data, rate, velocity):
