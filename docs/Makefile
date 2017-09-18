@@ -48,12 +48,6 @@ help:
 clean:
 	rm -rf $(BUILDDIR)/*
 
-.PHONY: docs
-docs:
-	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) ../docs
-	@echo
-	@echo "Build finished. The HTML pages are in ../docs."
-
 .PHONY: html
 html:
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html

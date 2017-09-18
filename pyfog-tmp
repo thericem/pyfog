@@ -1,8 +1,0 @@
-exp = FogExperiment('data.h5')
-exp.fog_single('bar', seconds=60, scalefactor=None)
-exp['bar'].restore_settings()
-
-
-for run in exp:
-    run.plot_allan_variance()
-legend(loc='best')

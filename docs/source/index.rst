@@ -10,8 +10,9 @@ Contents:
 
 .. toctree::
    :glob:
+   :caption: Modules
 
-   code_documentation/*
+   modules/*
 
 
 Indices and tables
