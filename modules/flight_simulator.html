@@ -1,0 +1,201 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Flight Simulator &#8212; Fiber Optic Gyro Toolkit 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Signal Processing" href="signal_processing.html" />
+    <link rel="prev" title="Welcome to Fiber Optic Gyro Toolkit’s documentation!" href="../index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-pyfog.flight_simulator">
+<span id="flight-simulator"></span><h1>Flight Simulator<a class="headerlink" href="#module-pyfog.flight_simulator" title="Permalink to this headline">¶</a></h1>
+<p>Methods for simulating FOG performance in an aircraft with perfect
+accelerometers.</p>
+<dl class="function">
+<dt id="pyfog.flight_simulator.get_cross_track_error">
+<code class="descclassname">pyfog.flight_simulator.</code><code class="descname">get_cross_track_error</code><span class="sig-paren">(</span><em>data</em>, <em>rate</em>, <em>velocity</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyfog/flight_simulator.html#get_cross_track_error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyfog.flight_simulator.get_cross_track_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the final cross-track position (in nautical miles)</p>
+<p>The algorithm simulates an aircraft traveling on a straight trajectory who
+turns according to the data provided. The aircraft instantaneously updates
+its heading at each timestep by Ω * Δt.</p>
+<p>This can be used in conjunction with <cite>simulate_fog_single</cite>. In order to
+simulate a transpacific flight and estimate the cross-track error for a
+single run, one could run:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">rate</span> <span class="o">=</span> <span class="mi">1</span> <span class="c1"># Hz</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">simulate_fog_single</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="n">rate</span><span class="p">,</span> <span class="n">hours</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">arw</span><span class="o">=.</span><span class="mi">0413</span><span class="p">,</span>
+<span class="gp">... </span>     <span class="n">drift</span><span class="o">=.</span><span class="mi">944</span><span class="p">,</span> <span class="n">correlation_time</span><span class="o">=</span><span class="mi">3600</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xtk</span> <span class="o">=</span> <span class="n">get_cross_track_error</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">rate</span><span class="p">,</span> <span class="mi">900</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong> (<em>ndarray.float</em>) – An array of rotation rates, in deg/h</li>
+<li><strong>rate</strong> (<em>float</em>) – The sampling rate of data in Hz</li>
+<li><strong>velocity</strong> (<em>float</em>) – The velocity of the simulated aircraft in kph</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The cross track error from this FOG signal.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyfog.flight_simulator.simulate_tombstone">
+<code class="descclassname">pyfog.flight_simulator.</code><code class="descname">simulate_tombstone</code><span class="sig-paren">(</span><em>rate=1</em>, <em>seconds=0</em>, <em>minutes=0</em>, <em>hours=0</em>, <em>arw=0</em>, <em>drift=0</em>, <em>correlation_time=1800</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyfog/flight_simulator.html#simulate_tombstone"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyfog.flight_simulator.simulate_tombstone" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a stochastic error simulation based on performance indicators.
+Note that this method uses a definition of bias stability that takes the
+standard deviation of 10-second averages. The algorithm is taken from
+<a class="footnote-reference" href="#lv" id="id1">[1]</a>.</p>
+<p>In order to recreate the same results that Lv et al show, enter the
+following command:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">simulate_fog_single</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">hours</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">arw</span><span class="o">=.</span><span class="mi">0413</span><span class="p">,</span>
+<span class="gp">... </span>     <span class="n">drift</span><span class="o">=.</span><span class="mi">944</span><span class="p">,</span> <span class="n">correlation_time</span><span class="o">=</span><span class="mi">3600</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For more information on the algorithm, refer to <a class="footnote-reference" href="#lv" id="id2">[1]</a>.</p>
+<table class="docutils footnote" frame="void" id="lv" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[1]</td><td><em>(<a class="fn-backref" href="#id1">1</a>, <a class="fn-backref" href="#id2">2</a>)</em> Lv, P., Lai, J., Liu, J., &amp; Qin, G. (2014). Stochastic error
+simulation method of fiber optic gyros based on performance indicators.
+Journal of the Franklin Institute, 351(3), 1501–1516.
+<a class="reference external" href="http://doi.org/10.1016/j.jfranklin.2013.11.007">http://doi.org/10.1016/j.jfranklin.2013.11.007</a></td></tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Atleast one of <cite>seconds</cite>, <cite>minutes</cite>, or <cite>hours</cite> must be positive,
+otherwise a <cite>ValueError</cite> will be raised.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>rate</strong> (<em>float</em><em>, </em><em>optional</em>) – The number of samples per second.</li>
+<li><strong>seconds</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of seconds of data</li>
+<li><strong>minutes</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of minutes to be added to the seconds parameter</li>
+<li><strong>hours</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of hours to be added to the seconds parameter</li>
+<li><strong>arw</strong> (<em>float</em><em>, </em><em>optional</em>) – The angular random walk, specified in degrees per root hour</li>
+<li><strong>drift</strong> (<em>float</em><em>, </em><em>optional</em>) – The bias drift, specified in degrees per hour</li>
+<li><strong>correlation_time</strong> (<em>float</em><em>, </em><em>optional</em>) – The correlation time in seconds. For more information, see “Stocastic
+error  simulation method of fiber optic gyros based on performance
+indicators” by Lv et al. They recommend a value between 1800 and 3600
+seconds.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">An array of data in degrees per hour, whose corresponding index are
+timestamps whose spacing is determined by the rate parameter.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">ndarray.float</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><code class="xref py py-exc docutils literal"><span class="pre">ValueError</span></code> – If the seconds, minutes, and hours do not add up to a positive time.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="../index.html" title="previous chapter">Welcome to Fiber Optic Gyro Toolkit’s documentation!</a></li>
+      <li>Next: <a href="signal_processing.html" title="next chapter">Signal Processing</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/modules/flight_simulator.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Jonathan Wheeler.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/modules/flight_simulator.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
